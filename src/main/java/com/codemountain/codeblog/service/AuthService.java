@@ -1,5 +1,6 @@
 package com.codemountain.codeblog.service;
 
+import com.codemountain.codeblog.dto.AuthResponse;
 import com.codemountain.codeblog.dto.LoginRequest;
 import com.codemountain.codeblog.dto.RegisterRequest;
 import com.codemountain.codeblog.entity.NotificationEmail;
@@ -8,10 +9,12 @@ import com.codemountain.codeblog.entity.VerificationToken;
 import com.codemountain.codeblog.exception.CodeBlogException;
 import com.codemountain.codeblog.repository.UserRepository;
 import com.codemountain.codeblog.repository.VerificationRepository;
+import com.codemountain.codeblog.security.JwtProvider;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +32,7 @@ public class AuthService {
     private final VerificationRepository verificationRepository;
     private final MailService mailService;
     private final AuthenticationManager authenticationManager;
+    private final JwtProvider jwtProvider;
 
 
     /**
@@ -43,6 +47,7 @@ public class AuthService {
         user.setUsername(registerRequest.getUsername());
         user.setCreatedOn(Instant.now());
         user.setIsEnabled(false);
+        user.setBio("Am a Tech enthusiast and I love Code-Blog");
 
         userRepository.save(user);
         String token = generateUserToken(user);
@@ -75,6 +80,10 @@ public class AuthService {
     }
 
 
+    /**
+     * Method called only when the user has successfully
+     * activated their email address
+     */
     @Transactional
     void fetchAndEnableUser(VerificationToken verificationToken) {
         String email = verificationToken.getUser().getEmail();
@@ -82,12 +91,23 @@ public class AuthService {
         user.setIsEnabled(true);
 
         userRepository.save(user);
+        verificationRepository.deleteById(verificationToken.getTokenId());
+        //TODO -> Create api to delete the token from database after the user has been enabled
     }
 
+    /**
+     * Log in existing user and validate the login
+     * using JSON Web Token
+     * @return
+     */
     @Transactional(readOnly = true)
-    public void login(LoginRequest loginRequest) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+    public AuthResponse login(LoginRequest loginRequest) {
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginRequest.getEmail(),
                 loginRequest.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        String token = jwtProvider.generateToken(authenticate);
+        return new AuthResponse(loginRequest.getEmail(), token);
     }
 }

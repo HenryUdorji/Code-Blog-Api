@@ -42,5 +42,7 @@ public class User {
 
     private Boolean isEnabled;
 
+    private String bio;
+
 
 }

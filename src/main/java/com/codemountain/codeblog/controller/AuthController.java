@@ -1,14 +1,13 @@
 package com.codemountain.codeblog.controller;
 
+import com.codemountain.codeblog.dto.AuthResponse;
 import com.codemountain.codeblog.dto.LoginRequest;
 import com.codemountain.codeblog.dto.RegisterRequest;
 import com.codemountain.codeblog.entity.User;
 import com.codemountain.codeblog.repository.UserRepository;
 import com.codemountain.codeblog.service.AuthService;
 import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +43,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public void loginUser(@RequestBody LoginRequest loginRequest) {
-        authService.login(loginRequest);
+    public AuthResponse loginUser(@RequestBody LoginRequest loginRequest) {
+        log.info("User login successful");
+        return authService.login(loginRequest);
     }
+
+    //TODO -> Create api for updating user info/details
 }
