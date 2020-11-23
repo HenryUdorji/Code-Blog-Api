@@ -1,3 +1,4 @@
+/*
 package com.codemountain.codeblog.entity;
 
 import lombok.AllArgsConstructor;
@@ -6,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "REACTION_TBL")
@@ -22,7 +22,6 @@ public class Reaction {
 
     private ReactionType reactionType;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postId", referencedColumnName = "postId")
     private Post post;
@@ -31,3 +30,4 @@ public class Reaction {
     @JoinColumn(name = "userId", referencedColumnName = "userId")
     private User user;
 }
+*/

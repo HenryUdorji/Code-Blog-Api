@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,11 +21,15 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long categoryId;
-    @NotBlank(message = "Category name is required")
+
+    @NotBlank(message = "Category categoryName is required")
     private String name;
+
     @NotBlank(message = "Description is required")
     private String description;
-    private Instant createdOn;
+
+    private Long createdDate;
+
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     private List<Post> categoryPost = new ArrayList<>();
 

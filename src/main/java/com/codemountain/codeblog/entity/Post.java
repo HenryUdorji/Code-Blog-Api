@@ -1,11 +1,14 @@
 package com.codemountain.codeblog.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import java.time.Instant;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,13 +30,15 @@ public class Post {
     @NotBlank(message = "Post title cannot be empty or blank")
     private String title;
 
-    private Instant createdOn;
-    private Instant updatedOn;
+    private Long createdDate;
+    private Long updatedDate;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", referencedColumnName = "userId")
     private User user;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoryId", referencedColumnName = "categoryId")
     private Category category;
@@ -42,9 +47,10 @@ public class Post {
     private List<Comments> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
-    private List<Reaction> reactions = new ArrayList<>();
+    private List<LikePost> likes = new ArrayList<>();
 
-    private Integer reaction;
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    private List<UnlikePost> unlikes = new ArrayList<>();
 
 
 }

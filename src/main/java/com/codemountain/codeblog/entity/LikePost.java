@@ -1,41 +1,30 @@
 package com.codemountain.codeblog.entity;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
-@Table(name = "COMMENTS_TBL")
+@Table(name = "LIKE_POST_TBL")
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 @Builder
-public class Comments {
+public class LikePost {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
+    private Long likeId;
 
-    @NotEmpty
-    private String content;
-
-    @NotBlank
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postId", referencedColumnName = "postId")
     private Post post;
 
-    @NotBlank
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", referencedColumnName = "userId")
     private User user;
-
-    private Long createdDate;
-    private Long updatedDate;
-
-
 }

@@ -15,11 +15,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -45,7 +45,7 @@ public class AuthService {
         user.setEmail(registerRequest.getEmail());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setUsername(registerRequest.getUsername());
-        user.setCreatedOn(Instant.now());
+        user.setCreatedDate(System.currentTimeMillis());
         user.setIsEnabled(false);
         user.setBio("Am a Tech enthusiast and I love Code-Blog");
 
@@ -83,16 +83,17 @@ public class AuthService {
     /**
      * Method called only when the user has successfully
      * activated their email address
+     * After account activation delete the token from database
      */
     @Transactional
     void fetchAndEnableUser(VerificationToken verificationToken) {
         String email = verificationToken.getUser().getEmail();
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new CodeBlogException("User not found with email - " + email));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CodeBlogException("User not found with email - " + email));
         user.setIsEnabled(true);
 
         userRepository.save(user);
         verificationRepository.deleteById(verificationToken.getTokenId());
-        //TODO -> Create api to delete the token from database after the user has been enabled
     }
 
     /**
@@ -109,5 +110,13 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authenticate);
         String token = jwtProvider.generateToken(authenticate);
         return new AuthResponse(loginRequest.getEmail(), token);
+    }
+
+    @Transactional(readOnly = true)
+    public User getCurrentUser() {
+        org.springframework.security.core.userdetails.User principal = (org.springframework.security.core.userdetails.User) SecurityContextHolder.
+                getContext().getAuthentication().getPrincipal();
+        return userRepository.findByEmail(principal.getUsername())
+                .orElseThrow(()-> new UsernameNotFoundException("User not found - " + principal.getUsername()));
     }
 }

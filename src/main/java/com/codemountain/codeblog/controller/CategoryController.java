@@ -23,8 +23,9 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<String> createCategory(@RequestBody CategoryDto categoryDto) {
         Category existingCategory = categoryRepository.findByNameIgnoreCase(categoryDto.getName());
+
         if (existingCategory != null) {
-            return new ResponseEntity<>("Category already exist", HttpStatus.CONFLICT);
+            return new ResponseEntity<>(categoryDto.getName() + " already exist", HttpStatus.CONFLICT);
         }
         else {
             categoryService.createCategory(categoryDto);
@@ -32,12 +33,17 @@ public class CategoryController {
         }
     }
 
+
     @GetMapping
-    public ResponseEntity<List<CategoryDto>> getAllCategory() {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(categoryService.getAll());
+    public ResponseEntity<List<CategoryDto>> getAllCategories() {
+        return ResponseEntity.status(HttpStatus.OK).body(categoryService.getAll());
     }
 
-    //TODO -> Create an api to query just a single category from Database
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryDto> getCategory(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(categoryService.getSingleCategory(id));
+    }
+
+    //TODO -> Create api for updating category info
 }

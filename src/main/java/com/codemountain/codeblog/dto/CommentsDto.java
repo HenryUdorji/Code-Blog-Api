@@ -1,19 +1,21 @@
 package com.codemountain.codeblog.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Builder
-public class CategoryDto {
+public class CommentsDto {
 
-    private Long categoryId;
-    private String name;
-    private String description;
-    private Integer numberOfPosts;
+    private Long commentId;
+    private Long postId;
+    private String content;
+    private String username;
     private Long createdDate;
+    private Long updatedDate;
 }

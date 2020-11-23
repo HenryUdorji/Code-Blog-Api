@@ -1,19 +1,20 @@
+/*
 package com.codemountain.codeblog.dto;
 
+
+import com.codemountain.codeblog.entity.ReactionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Builder
-public class CategoryDto {
+public class ReactionDto {
 
-    private Long categoryId;
-    private String name;
-    private String description;
-    private Integer numberOfPosts;
-    private Long createdDate;
+    private ReactionType reactionType;
+    private Long postId;
 }
+*/

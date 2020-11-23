@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,9 +35,15 @@ public class User {
     private String image;
 
     @OneToMany(mappedBy = "user")
-    private List<Post> user_post = new ArrayList<>();
+    private List<Post> userPosts = new ArrayList<>();
 
-    private Instant createdOn;
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    private List<LikePost> userLikes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    private List<UnlikePost> userUnlikes = new ArrayList<>();
+
+    private Long createdDate;
 
     private Boolean isEnabled;
 

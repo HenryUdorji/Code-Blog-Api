@@ -1,3 +1,4 @@
+/*
 package com.codemountain.codeblog.entity;
 
 public enum ReactionType {
@@ -7,3 +8,4 @@ public enum ReactionType {
     ReactionType(int direction) {
     }
 }
+*/
