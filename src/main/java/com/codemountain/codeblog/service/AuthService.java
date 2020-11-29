@@ -2,6 +2,7 @@ package com.codemountain.codeblog.service;
 
 import com.codemountain.codeblog.dto.AuthResponse;
 import com.codemountain.codeblog.dto.LoginRequest;
+import com.codemountain.codeblog.dto.RefreshTokenRequest;
 import com.codemountain.codeblog.dto.RegisterRequest;
 import com.codemountain.codeblog.entity.NotificationEmail;
 import com.codemountain.codeblog.entity.User;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,6 +35,7 @@ public class AuthService {
     private final MailService mailService;
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
+    private final RefreshTokenService refreshTokenService;
 
 
     /**
@@ -41,20 +44,26 @@ public class AuthService {
      */
     @Transactional
     public void signup(RegisterRequest registerRequest) {
-        User user = new User();
-        user.setEmail(registerRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        user.setUsername(registerRequest.getUsername());
-        user.setCreatedDate(System.currentTimeMillis());
-        user.setIsEnabled(false);
-        user.setBio("Am a Tech enthusiast and I love Code-Blog");
+        User existingUser = userRepository.findByEmailIgnoreCase(registerRequest.getEmail());
+        if (existingUser != null) {
+            throw new CodeBlogException("Email already exist");
+        }
+        else {
+            User user = new User();
+            user.setEmail(registerRequest.getEmail());
+            user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+            user.setUsername(registerRequest.getUsername());
+            user.setCreatedDate(LocalDateTime.now());
+            user.setIsEnabled(false);
+            user.setBio("Am a Tech enthusiast and I love Code-Blog");
 
-        userRepository.save(user);
-        String token = generateUserToken(user);
-        mailService.sendMail(new NotificationEmail(user.getEmail(),
-                "Please Activate your account",
-                "Thank you for joining Code-Blog, " + "Please click on the link below to activate your account : " +
-                        "http://localhost:8080/api/v1/auth/accountVerification/" + token));
+            userRepository.save(user);
+            String token = generateUserToken(user);
+            mailService.sendMail(new NotificationEmail(user.getEmail(),
+                    "Please Activate your account",
+                    "Thank you for joining Code-Blog, " + "Please click on the link below to activate your account : " +
+                            "http://localhost:8080/api/v1/auth/accountVerification/" + token));
+        }
     }
 
 
@@ -101,7 +110,7 @@ public class AuthService {
      * using JSON Web Token
      * @return
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public AuthResponse login(LoginRequest loginRequest) {
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginRequest.getEmail(),
@@ -109,7 +118,12 @@ public class AuthService {
 
         SecurityContextHolder.getContext().setAuthentication(authenticate);
         String token = jwtProvider.generateToken(authenticate);
-        return new AuthResponse(loginRequest.getEmail(), token);
+        return AuthResponse.builder()
+                .email(loginRequest.getEmail())
+                .authenticationToken(token)
+                .expiresAt(LocalDateTime.now().plusSeconds(jwtProvider.getJwtExpirationInMillis()))
+                .refreshToken(refreshTokenService.generateRefreshToken().getToken())
+                .build();
     }
 
     @Transactional(readOnly = true)
@@ -118,5 +132,17 @@ public class AuthService {
                 getContext().getAuthentication().getPrincipal();
         return userRepository.findByEmail(principal.getUsername())
                 .orElseThrow(()-> new UsernameNotFoundException("User not found - " + principal.getUsername()));
+    }
+
+    @Transactional(readOnly = true)
+    public AuthResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+        refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
+        String token = jwtProvider.generateTokenWithEmail(refreshTokenRequest.getEmail());
+        return AuthResponse.builder()
+                .email(refreshTokenRequest.getEmail())
+                .authenticationToken(token)
+                .refreshToken(refreshTokenRequest.getRefreshToken())
+                .expiresAt(LocalDateTime.now().plusSeconds(jwtProvider.getJwtExpirationInMillis()))
+                .build();
     }
 }

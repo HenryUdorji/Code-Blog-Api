@@ -1,25 +1,25 @@
-spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/code_blog?serverTimezone=UTC
-    username: root
-    password: root
-
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-    generate-ddl: true
-
-
-  mail:
-    host: smtp.mailtrap.io
-    port: 587
-    username: b70ba91dd65f3b
-    password: 48886c41499418
-    protocol: smtp
-
-
-  servlet:
-    multipart:
-      enabled: true
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/code_blog?serverTimezone=UTC
+#    username: root
+#    password: root
+#
+#  jpa:
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: update
+#    generate-ddl: true
+#
+#
+#  mail:
+#    host: smtp.mailtrap.io
+#    port: 587
+#    username: b70ba91dd65f3b
+#    password: 48886c41499418
+#    protocol: smtp
+#
+#
+#  servlet:
+#    multipart:
+#      enabled: true

@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,10 +20,16 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Transactional
-    public CategoryDto createCategory(CategoryDto categoryDto) {
-        Category category =  categoryRepository.save(mapDtoToCategory(categoryDto));
-        categoryDto.setCategoryId(category.getCategoryId());
-        return categoryDto;
+    public void createCategory(CategoryDto categoryDto) {
+        Category existingCategory = categoryRepository.findByNameIgnoreCase(categoryDto.getName());
+
+        if (existingCategory != null) {
+            throw new CodeBlogException(categoryDto.getName() + " already exist");
+        }
+        else {
+            Category category = categoryRepository.save(mapDtoToCategory(categoryDto));
+            categoryDto.setCategoryId(category.getCategoryId());
+        }
     }
 
     @Transactional(readOnly = true)
@@ -56,7 +63,7 @@ public class CategoryService {
         return Category.builder()
                 .name(categoryDto.getName())
                 .description(categoryDto.getDescription())
-                .createdDate(System.currentTimeMillis())
+                .createdDate(LocalDateTime.now())
                 .build();
     }
 

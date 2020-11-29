@@ -2,8 +2,6 @@ package com.codemountain.codeblog.controller;
 
 
 import com.codemountain.codeblog.dto.CategoryDto;
-import com.codemountain.codeblog.entity.Category;
-import com.codemountain.codeblog.repository.CategoryRepository;
 import com.codemountain.codeblog.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,20 +15,12 @@ import java.util.List;
 @AllArgsConstructor
 public class CategoryController {
 
-    private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
 
     @PostMapping
-    public ResponseEntity<String> createCategory(@RequestBody CategoryDto categoryDto) {
-        Category existingCategory = categoryRepository.findByNameIgnoreCase(categoryDto.getName());
-
-        if (existingCategory != null) {
-            return new ResponseEntity<>(categoryDto.getName() + " already exist", HttpStatus.CONFLICT);
-        }
-        else {
-            categoryService.createCategory(categoryDto);
-            return new ResponseEntity<>("Category created - " + categoryDto.getName(), HttpStatus.CREATED);
-        }
+    public ResponseEntity createCategory(@RequestBody CategoryDto categoryDto) {
+        categoryService.createCategory(categoryDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Category created - " + categoryDto.getName());
     }
 
 

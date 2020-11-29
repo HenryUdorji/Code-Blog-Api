@@ -14,7 +14,4 @@ public interface UnlikePostRepository extends JpaRepository<UnlikePost, Long> {
 
     Optional<UnlikePost> findByPostAndUser(Post post, User currentUser);
 
-    UnlikePost deleteByPost(Post post);
-
-    UnlikePost deleteByPostAndUser(Post post, User currentUser);
 }

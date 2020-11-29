@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -34,8 +35,8 @@ public class Comments {
     @JoinColumn(name = "userId", referencedColumnName = "userId")
     private User user;
 
-    private Long createdDate;
-    private Long updatedDate;
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
 
 
 }

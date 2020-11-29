@@ -4,7 +4,6 @@ import com.codemountain.codeblog.entity.NotificationEmail;
 import com.codemountain.codeblog.exception.CodeBlogException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -34,7 +33,7 @@ public class MailService {
             mailSender.send(mimeMessagePreparator);
             log.info("Activation email sent!!");
         }catch (MailException e) {
-            throw new CodeBlogException("Error occurred when sending mail to: " + notificationEmail.getRecipient());
+            throw new CodeBlogException("Error occurred while sending mail to: " + notificationEmail.getRecipient());
         }
     }
 }

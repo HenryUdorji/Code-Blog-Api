@@ -30,7 +30,8 @@ public class UserDetailServiceImpl implements UserDetailsService {
         User user = userOptional.orElseThrow(()-> new CodeBlogException("No user found with email - " + email));
 
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
-                user.getIsEnabled(), true, true, true, getAuthorities("USER"));
+                user.getIsEnabled(), true, true, true,
+                getAuthorities("USER"));
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(String role) {

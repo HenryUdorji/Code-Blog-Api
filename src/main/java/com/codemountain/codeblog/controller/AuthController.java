@@ -2,15 +2,17 @@ package com.codemountain.codeblog.controller;
 
 import com.codemountain.codeblog.dto.AuthResponse;
 import com.codemountain.codeblog.dto.LoginRequest;
+import com.codemountain.codeblog.dto.RefreshTokenRequest;
 import com.codemountain.codeblog.dto.RegisterRequest;
-import com.codemountain.codeblog.entity.User;
-import com.codemountain.codeblog.repository.UserRepository;
 import com.codemountain.codeblog.service.AuthService;
+import com.codemountain.codeblog.service.RefreshTokenService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("api/v1/auth")
@@ -19,27 +21,13 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    private final UserRepository userRepository;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/signup")
     public ResponseEntity signup(@RequestBody RegisterRequest registerRequest) {
-        User existingUser = userRepository.findByEmailIgnoreCase(registerRequest.getEmail());
-        if (existingUser != null) {
-            log.error("Email already exist");
-            return new ResponseEntity<>("Email already exist", HttpStatus.CONFLICT);
-        }
-        else {
-            authService.signup(registerRequest);
-            log.info("User Account created successfully");
-            return new ResponseEntity<>("User Account created successfully", HttpStatus.CREATED);
-        }
-    }
-
-    @GetMapping("accountVerification/{token}")
-    public ResponseEntity<String> verifyAccount(@PathVariable String token) {
-        authService.verifyAccount(token);
-        log.info("Account verification successful");
-        return new ResponseEntity<>("Account verification successful", HttpStatus.OK);
+        authService.signup(registerRequest);
+        log.info("User Account created successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body("User Account created successfully");
     }
 
     @PostMapping("/login")
@@ -48,5 +36,22 @@ public class AuthController {
         return authService.login(loginRequest);
     }
 
-    //TODO -> Create api for updating user info/details
+    @PostMapping("/refresh/token")
+    public AuthResponse refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+        return authService.refreshToken(refreshTokenRequest);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity logout(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+        refreshTokenService.deleteRefreshToken(refreshTokenRequest.getRefreshToken());
+        return ResponseEntity.status(HttpStatus.OK).body("Refresh Token deleted successfully");
+    }
+
+    @GetMapping("accountVerification/{token}")
+    public ResponseEntity verifyAccount(@PathVariable String token) {
+        authService.verifyAccount(token);
+        log.info("Account verification successful");
+        return ResponseEntity.status(HttpStatus.OK).body("Account verification successful");
+    }
+
 }

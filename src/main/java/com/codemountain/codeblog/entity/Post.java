@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +31,8 @@ public class Post {
     @NotBlank(message = "Post title cannot be empty or blank")
     private String title;
 
-    private Long createdDate;
-    private Long updatedDate;
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

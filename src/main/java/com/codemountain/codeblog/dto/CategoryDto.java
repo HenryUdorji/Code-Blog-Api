@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -15,5 +17,5 @@ public class CategoryDto {
     private String name;
     private String description;
     private Integer numberOfPosts;
-    private Long createdDate;
+    private LocalDateTime createdDate;
 }

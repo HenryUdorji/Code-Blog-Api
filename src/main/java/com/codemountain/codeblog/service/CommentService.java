@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,20 +64,34 @@ public class CommentService {
     @Transactional
     public Comments updateComment(CommentsDto commentsDto) {
         Comments existingComment = commentRepository.findById(commentsDto.getCommentId())
-                .orElseThrow(()-> new CodeBlogException("Comment with Id - " + commentsDto.getCommentId() + " not found"));
+                .orElseThrow(()-> new CodeBlogException("Comment not found"));
         User currentUser = authService.getCurrentUser();
 
-        existingComment.setContent(commentsDto.getContent());
-        existingComment.setUser(currentUser);
-        existingComment.setUpdatedDate(System.currentTimeMillis());
+        if (existingComment.getUser() == currentUser) {
+            existingComment.setContent(commentsDto.getContent());
+            existingComment.setUser(currentUser);
+            existingComment.setUpdatedDate(LocalDateTime.now());
 
-        return commentRepository.save(existingComment);
+            return commentRepository.save(existingComment);
+        }
+        else {
+            throw new CodeBlogException("You cannot edit another User's comment");
+        }
         //TODO -> Only the user that created the comment should be able to update it
     }
 
     @Transactional
     public void deleteComment(long id) {
-        commentRepository.deleteById(id);
+        Comments existingComment = commentRepository.findById(id)
+                .orElseThrow(()-> new CodeBlogException("Comment not found"));
+        User currentUser = authService.getCurrentUser();
+
+        if (existingComment.getUser() == currentUser) {
+            commentRepository.deleteById(id);
+        }
+        else {
+            throw new CodeBlogException("You cannot delete another User's comment");
+        }
         //TODO -> Only the user who created the post should be able to delete it
     }
 
@@ -90,8 +105,8 @@ public class CommentService {
         return Comments.builder().post(post)
                 .content(commentsDto.getContent())
                 .user(currentUser)
-                .createdDate(System.currentTimeMillis())
-                .updatedDate(System.currentTimeMillis())
+                .createdDate(LocalDateTime.now())
+                .updatedDate(LocalDateTime.now())
                 .build();
     }
 

@@ -1,20 +1,20 @@
-/*
 package com.codemountain.codeblog.dto;
 
 
-import com.codemountain.codeblog.entity.ReactionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ReactionDto {
+public class RefreshTokenRequest {
 
-    private ReactionType reactionType;
-    private Long postId;
+    @NotBlank
+    private String refreshToken;
+    private String email;
 }
-*/

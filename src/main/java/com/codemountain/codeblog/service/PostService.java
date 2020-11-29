@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,8 +30,14 @@ public class PostService {
 
     @Transactional
     public Post createPost(PostDto postDto) {
-        Post post = mapDtoToPost(postDto);
-        return postRepository.save(post);
+        Category categoryName = categoryRepository.findByName(postDto.getCategoryName());
+        if (categoryName == null) {
+            throw new CodeBlogException("Category name - " + postDto.getCategoryName() + " does not exist");
+        }
+        else {
+            Post post = mapDtoToPost(postDto);
+            return postRepository.save(post);
+        }
     }
 
 
@@ -73,23 +80,38 @@ public class PostService {
     public Post updatePost(PostDto postDto) {
         Post existingPost = postRepository.findById(postDto.getPostId())
                 .orElseThrow(()-> new CodeBlogException("Post not found"));
-        //Category categoryName = categoryRepository.findByName(postDto.getCategoryName());
         User currentUser = authService.getCurrentUser();
 
-        existingPost.setTitle(postDto.getTitle());
-        existingPost.setContent(postDto.getContent());
-        //existingPost.setCategory(categoryName);
-        existingPost.setUser(currentUser);
-        existingPost.setUpdatedDate(System.currentTimeMillis());
+        if (existingPost.getUser() == currentUser) {
+            existingPost.setTitle(postDto.getTitle());
+            existingPost.setContent(postDto.getContent());
+            //existingPost.setCategory(categoryName);
+            existingPost.setUser(currentUser);
+            existingPost.setUpdatedDate(LocalDateTime.now());
 
-        return postRepository.save(existingPost);
+            return postRepository.save(existingPost);
+        }
+        else {
+            throw new CodeBlogException("You cannot edit another User's post");
+        }
+
+
 
         //TODO -> Only the user that created the post should be able to update it
     }
 
     @Transactional
     public void deletePost(long id) {
-        postRepository.deleteById(id);
+        Post existingPost = postRepository.findById(id)
+                .orElseThrow(()-> new CodeBlogException("Post not found"));
+        User currentUser = authService.getCurrentUser();
+
+        if (existingPost.getUser() == currentUser) {
+            postRepository.deleteById(id);
+        }
+        else {
+            throw new CodeBlogException("You cannot delete another User's post");
+        }
 
         //TODO -> Only the user who created the post should be able to delete it
     }
@@ -104,8 +126,8 @@ public class PostService {
                 .content(postDto.getContent())
                 .category(categoryName)
                 .user(currentUser)
-                .createdDate(System.currentTimeMillis())
-                .updatedDate(System.currentTimeMillis())
+                .createdDate(LocalDateTime.now())
+                .updatedDate(LocalDateTime.now())
                 .build();
     }
 

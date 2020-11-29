@@ -14,5 +14,4 @@ public interface LikePostRepository extends JpaRepository<LikePost, Long> {
 
     Optional<LikePost> findByPostAndUser(Post post, User currentUser);
 
-    LikePost deleteByPost(Post post);
 }

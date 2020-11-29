@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class User {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private List<UnlikePost> userUnlikes = new ArrayList<>();
 
-    private Long createdDate;
+    private LocalDateTime createdDate;
 
     private Boolean isEnabled;
 
