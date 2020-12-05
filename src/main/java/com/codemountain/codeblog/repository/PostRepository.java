@@ -13,5 +13,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findAllByUser(User user);
 
+    List<Post> findAllByIsPublished(Boolean isPublished);
+
     //List<Post> findAllByPost(Post post);
 }

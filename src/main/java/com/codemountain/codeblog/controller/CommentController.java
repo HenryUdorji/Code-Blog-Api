@@ -1,8 +1,6 @@
 package com.codemountain.codeblog.controller;
 
 import com.codemountain.codeblog.dto.CommentsDto;
-import com.codemountain.codeblog.repository.CommentRepository;
-import com.codemountain.codeblog.service.AuthService;
 import com.codemountain.codeblog.service.CommentService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,8 +15,6 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
-    private final CommentRepository commentRepository;
-    private final AuthService authService;
 
 
     @PostMapping
@@ -28,13 +24,13 @@ public class CommentController {
     }
 
 
-    @GetMapping("/by-postId/{postId}")
-    public ResponseEntity<List<CommentsDto>> getCommentsByPost(@PathVariable Long postId) {
-        return ResponseEntity.status(HttpStatus.OK).body(commentService.getCommentsByPost(postId));
+    @GetMapping("/post/{id}")
+    public ResponseEntity<List<CommentsDto>> getCommentsByPost(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.getCommentsByPost(id));
     }
 
 
-    @GetMapping("/by-user/{username}")
+    @GetMapping("/user/{username}")
     public ResponseEntity<List<CommentsDto>> getCommentsByUser(@PathVariable String username) {
         return ResponseEntity.status(HttpStatus.OK).body(commentService.getCommentsByUser(username));
     }

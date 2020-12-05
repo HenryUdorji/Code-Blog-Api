@@ -11,6 +11,7 @@ import com.codemountain.codeblog.exception.CodeBlogException;
 import com.codemountain.codeblog.repository.UserRepository;
 import com.codemountain.codeblog.repository.VerificationRepository;
 import com.codemountain.codeblog.security.JwtProvider;
+import com.codemountain.codeblog.utils.FormatTime;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -121,7 +122,7 @@ public class AuthService {
         return AuthResponse.builder()
                 .email(loginRequest.getEmail())
                 .authenticationToken(token)
-                .expiresAt(LocalDateTime.now().plusSeconds(jwtProvider.getJwtExpirationInMillis()))
+                .expiresAt(FormatTime.formatTime(LocalDateTime.now().plusSeconds(jwtProvider.getJwtExpirationInMillis())))
                 .refreshToken(refreshTokenService.generateRefreshToken().getToken())
                 .build();
     }
@@ -142,7 +143,7 @@ public class AuthService {
                 .email(refreshTokenRequest.getEmail())
                 .authenticationToken(token)
                 .refreshToken(refreshTokenRequest.getRefreshToken())
-                .expiresAt(LocalDateTime.now().plusSeconds(jwtProvider.getJwtExpirationInMillis()))
+                .expiresAt(FormatTime.formatTime(LocalDateTime.now().plusSeconds(jwtProvider.getJwtExpirationInMillis())))
                 .build();
     }
 }

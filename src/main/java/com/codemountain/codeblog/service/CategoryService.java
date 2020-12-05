@@ -5,6 +5,7 @@ import com.codemountain.codeblog.dto.CategoryDto;
 import com.codemountain.codeblog.entity.Category;
 import com.codemountain.codeblog.exception.CodeBlogException;
 import com.codemountain.codeblog.repository.CategoryRepository;
+import com.codemountain.codeblog.utils.FormatTime;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,7 +55,7 @@ public class CategoryService {
                 .categoryId(category.getCategoryId())
                 .description(category.getDescription())
                 .numberOfPosts(category.getCategoryPost().size())
-                .createdDate(category.getCreatedDate())
+                .createdDate(FormatTime.formatTime(category.getCreatedDate()))
                 .build();
     }
 

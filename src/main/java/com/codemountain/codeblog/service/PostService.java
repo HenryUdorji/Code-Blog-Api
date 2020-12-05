@@ -7,6 +7,7 @@ import com.codemountain.codeblog.entity.Post;
 import com.codemountain.codeblog.entity.User;
 import com.codemountain.codeblog.exception.CodeBlogException;
 import com.codemountain.codeblog.repository.*;
+import com.codemountain.codeblog.utils.FormatTime;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +52,16 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public List<PostDto> getAllPost() {
-        return postRepository.findAll()
+        return postRepository.findAllByIsPublished(true)
+                .stream()
+                .map(this::mapToPostDto)
+                .collect(Collectors.toList());
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<PostDto> getAllDraftPost() {
+        return postRepository.findAllByIsPublished(false)
                 .stream()
                 .map(this::mapToPostDto)
                 .collect(Collectors.toList());
@@ -128,6 +138,7 @@ public class PostService {
                 .user(currentUser)
                 .createdDate(LocalDateTime.now())
                 .updatedDate(LocalDateTime.now())
+                .isPublished(postDto.getIsPublished())
                 .build();
     }
 
@@ -139,12 +150,14 @@ public class PostService {
                 .content(post.getContent())
                 .categoryName(post.getCategory().getName())
                 .username(post.getUser().getUsername())
-                .createdDate(post.getCreatedDate())
-                .updatedDate(post.getUpdatedDate())
+                .isPublished(post.getIsPublished())
+                .createdDate(FormatTime.formatTime(post.getCreatedDate()))
+                .updatedDate(FormatTime.formatTime(post.getUpdatedDate()))
                 .commentCount(commentRepository.findAllByPost(post).size())
                 .likesCount(likePostRepository.findAllByPost(post).size())
                 .unlikesCount(unlikePostRepository.findAllByPost(post).size())
                 .build();
     }
+
 
 }

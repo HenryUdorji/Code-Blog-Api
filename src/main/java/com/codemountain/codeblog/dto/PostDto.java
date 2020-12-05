@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,8 +17,9 @@ public class PostDto {
     private String content;
     private String categoryName;
     private String username;
-    private LocalDateTime createdDate;
-    private LocalDateTime updatedDate;
+    private String createdDate;
+    private String updatedDate;
+    private Boolean isPublished;
     private Integer likesCount;
     private Integer unlikesCount;
     private Integer commentCount;

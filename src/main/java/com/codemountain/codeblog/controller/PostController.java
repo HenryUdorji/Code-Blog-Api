@@ -30,6 +30,11 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPost());
     }
 
+    @GetMapping("/draft")
+    public ResponseEntity<List<PostDto>> getAllDraftPost() {
+        return ResponseEntity.status(HttpStatus.OK).body(postService.getAllDraftPost());
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<PostDto> getSinglePost(@PathVariable Long id) {
@@ -37,13 +42,13 @@ public class PostController {
     }
 
 
-    @GetMapping("/by-category/{id}")
+    @GetMapping("/category/{id}")
     public ResponseEntity<List<PostDto>> getPostByCategory(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(postService.getPostByCategory(id));
     }
 
 
-    @GetMapping("/by-user/{name}")
+    @GetMapping("/user/{name}")
     public ResponseEntity<List<PostDto>> getPostByUsername(@PathVariable String name) {
         return ResponseEntity.status(HttpStatus.OK).body(postService.getPostByUsername(name));
     }

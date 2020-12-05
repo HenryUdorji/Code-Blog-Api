@@ -10,6 +10,7 @@ import com.codemountain.codeblog.exception.CodeBlogException;
 import com.codemountain.codeblog.repository.CommentRepository;
 import com.codemountain.codeblog.repository.PostRepository;
 import com.codemountain.codeblog.repository.UserRepository;
+import com.codemountain.codeblog.utils.FormatTime;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -117,8 +118,8 @@ public class CommentService {
                 .content(comments.getContent())
                 .postId(comments.getPost().getPostId())
                 .username(comments.getUser().getUsername())
-                .createdDate(comments.getCreatedDate())
-                .updatedDate(comments.getUpdatedDate())
+                .createdDate(FormatTime.formatTime(comments.getCreatedDate()))
+                .updatedDate(FormatTime.formatTime(comments.getUpdatedDate()))
                 .build();
     }
 

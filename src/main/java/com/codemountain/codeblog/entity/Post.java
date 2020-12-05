@@ -53,5 +53,7 @@ public class Post {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private List<UnlikePost> unlikes = new ArrayList<>();
 
+    //TODO -> add field for visibility(either post is in draft or public)
+    private Boolean isPublished;
 
 }
